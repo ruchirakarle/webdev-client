@@ -35,6 +35,14 @@ export default function ListTags() {
   <li>Clean Code</li>
   <li>Designing Data-Intensive Applications</li>
 </ul>
+<h5>HTML Tags Used in This Chapter</h5>
+<ul id="wd-ai-html-tags">
+  <li>h1 - largest heading tag</li>
+  <li>p - paragraph, adds vertical spacing</li>
+  <li>ol - ordered (numbered) list</li>
+  <li>ul - unordered (bulleted) list</li>
+  <li>table - organizes data into rows and columns</li>
+</ul>
     </div>
   );
 }

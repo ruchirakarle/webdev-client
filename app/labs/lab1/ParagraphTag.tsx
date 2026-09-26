@@ -30,6 +30,11 @@ export default function ParagraphTag() {
         In this course, I hope to get better at using the MERN stack, since
         I already have experience with React.
       </p>
+      <p id="wd-ai-p">
+  Wrapping text in a p tag tells the browser to add margin space above and
+  below it, which is why paragraphs appear visually separated instead of
+  blending together.
+</p>
     </div>
   );
 }
