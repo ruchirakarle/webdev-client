@@ -7,8 +7,8 @@ export default function Labs() {
       <p>
         Ruchira Ravindra Karle
         <br />
-        
-        <a  href="https://github.com/ruchirakarle/webdev-client"
+        <a
+          href="https://github.com/ruchirakarle/webdev-client"
           id="wd-github"
           target="_blank"
           rel="noreferrer"
@@ -22,6 +22,11 @@ export default function Labs() {
         </li>
         <li>
           <Link href="/labs/lab2">Lab 2: CSS Basics</Link>
+        </li>
+        <li>
+          <Link href="/" id="wd-kambaz-link">
+            Kambaz
+          </Link>
         </li>
         <li>
           <Link href="/labs/lab3">Lab 3: JavaScript Fundamentals</Link>
