@@ -28,7 +28,11 @@ import FunctionDestructing from "./FunctionDestructing";
 import DestructingImports from "./DestructingImports";
 import OptionalChaining from "./OptionalChaining";
 import Classes from "./Classes";
-import Styles from "./Styles";
+import Styles from "./Styles"; 
+    <ServerComponentDemo />
+   import ClientComponentDemo from "./ClientComponentDemo";
+   <ClientComponentDemo />
+   import ServerComponentDemo from "./ServerComponentDemo";
 
 export default function Lab3() {
   console.log("Hello World!");
