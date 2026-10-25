@@ -1,4 +1,5 @@
 import Link from "next/link";
+import * as db from "../../../../database";
 
 const label = "mb-1 block text-sm font-medium";
 const input = "w-full rounded border border-neutral-300 px-3 py-2";
@@ -10,32 +11,38 @@ export default async function AssignmentEditor({
 }: {
   params: Promise<{ cid: string; aid: string }>;
 }) {
-  const { cid } = await params;
+  const { cid, aid } = await params;
+  const assignment = db.assignments.find((a) => a._id === aid);
   return (
     <div id="wd-assignments-editor" className="max-w-3xl">
-
-
       <label htmlFor="wd-name" className={label}>Assignment Name</label>
-      <input id="wd-name" defaultValue="A1 - ENV + HTML" className={`${input} mb-4`} />
-
-
+      <input
+        id="wd-name"
+        defaultValue={assignment?.title ?? ""}
+        className={`${input} mb-2`}
+      />
+      {/* With AI §3.10.8.1 */}
+      <p id="wd-assignment-id" className="mb-4 text-sm text-neutral-600">
+        Assignment id: {aid}
+      </p>
 
       <label htmlFor="wd-description" className={label}>Description</label>
       <textarea
         id="wd-description"
         rows={6}
         className={`${input} mb-4`}
-        defaultValue="The assignment is available online. Submit a link to the landing page of your Web application running on Vercel."
+        defaultValue={assignment?.description ?? ""}
       />
-
-
 
       <div className={row}>
         <label htmlFor="wd-points" className={rowLabel}>Points</label>
-        <input id="wd-points" type="number" defaultValue={100} className={input} />
+        <input
+          id="wd-points"
+          type="number"
+          defaultValue={assignment?.points ?? 100}
+          className={input}
+        />
       </div>
-
-
 
       <div className={row}>
         <label htmlFor="wd-group" className={rowLabel}>Assignment Group</label>
@@ -54,8 +61,6 @@ export default async function AssignmentEditor({
           <option value="Points">Points</option>
         </select>
       </div>
-
-
 
       <div className={row}>
         <label htmlFor="wd-submission-type" className={rowLabel}>Submission Type</label>
@@ -79,7 +84,6 @@ export default async function AssignmentEditor({
         </div>
       </div>
 
-
       <div className={row}>
         <span className={rowLabel}>Assign</span>
         <div className="rounded border border-neutral-300 p-3">
@@ -87,25 +91,30 @@ export default async function AssignmentEditor({
           <input id="wd-assign-to" defaultValue="Everyone" className={`${input} mb-3`} />
 
           <label htmlFor="wd-due-date" className={label}>Due</label>
-          <input id="wd-due-date" type="datetime-local" defaultValue="2024-05-13T23:59" className={`${input} mb-3`} />
+          <input
+            id="wd-due-date"
+            type="date"
+            defaultValue={assignment?.due}
+            className={`${input} mb-3`}
+          />
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <div>
               <label htmlFor="wd-available-from" className={label}>Available from</label>
-              <input id="wd-available-from" type="datetime-local" defaultValue="2024-05-06T00:00" className={input} />
+              <input
+                id="wd-available-from"
+                type="date"
+                defaultValue={assignment?.available}
+                className={input}
+              />
             </div>
             <div>
               <label htmlFor="wd-available-until" className={label}>Until</label>
-              <input id="wd-available-until" type="datetime-local" defaultValue="2024-05-20T00:00" className={input} />
+              <input id="wd-available-until" type="date" className={input} />
             </div>
           </div>
         </div>
       </div>
-
-
-      <label htmlFor="wd-ai-editor-notes" className={label}>Sample notes</label>
-      <textarea id="wd-ai-editor-notes" rows={3} className={`${input} mb-4`} />
-
 
       <hr className="my-4" />
       <div className="flex justify-end gap-2">
