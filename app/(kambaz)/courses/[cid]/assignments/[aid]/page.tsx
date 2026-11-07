@@ -1,138 +1,137 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
-import * as db from "../../../../database";
-
-const label = "mb-1 block text-sm font-medium";
-const input = "w-full rounded border border-neutral-300 px-3 py-2";
-const row = "mb-4 grid grid-cols-1 gap-2 md:grid-cols-[150px_1fr] md:items-start";
-const rowLabel = "text-sm font-medium md:pt-2 md:text-right";
-
-export default async function AssignmentEditor({
-  params,
-}: {
-  params: Promise<{ cid: string; aid: string }>;
-}) {
-  const { cid, aid } = await params;
-  const assignment = db.assignments.find((a) => a._id === aid);
+import { useParams, useRouter } from "next/navigation";
+import { useAssignmentsStore, type Assignment } from "../../../../store/assignmentsStore";
+import { useAccountContext } from "../../../../account/AccountContext";
+export default function AssignmentEditor() {
+  const { cid, aid } = useParams();
+  const courseId = String(cid);
+  const assignmentId = String(aid);
+  const router = useRouter();
+  const assignments = useAssignmentsStore((state) => state.assignments);
+  const addAssignment = useAssignmentsStore((state) => state.addAssignment);
+  const updateAssignment = useAssignmentsStore((state) => state.updateAssignment);
+  const { currentUser } = useAccountContext();
+  const canEdit =
+    !currentUser || currentUser.role === "FACULTY" || currentUser.role === "ADMIN";
+  const isNew = assignmentId === "new";
+  const existing = assignments.find((a) => a._id === assignmentId);
+  const [draft, setDraft] = useState<Assignment>(
+    () =>
+      existing ?? {
+        _id: "new",
+        title: "New Assignment",
+        course: courseId,
+        description: "",
+        points: 100,
+        due: "",
+        available: "",
+        until: "",
+      },
+  );
+  if (!isNew && !existing) return <p>Assignment not found.</p>;
+  const save = () => {
+    if (isNew) addAssignment({ ...draft, course: courseId });
+    else updateAssignment({ ...draft, course: courseId });
+    router.push(`/courses/${courseId}/assignments`);
+  };
+  const input = "rounded border border-neutral-300 px-2 py-1";
   return (
-    <div id="wd-assignments-editor" className="max-w-3xl">
-      <label htmlFor="wd-name" className={label}>Assignment Name</label>
+    <div id="wd-assignments-editor">
+      <label htmlFor="wd-name">Assignment Name</label>
       <input
         id="wd-name"
-        defaultValue={assignment?.title ?? ""}
-        className={`${input} mb-2`}
+        className={`${input} block w-full`}
+        value={draft.title}
+        onChange={(e) => setDraft({ ...draft, title: e.target.value })}
       />
-      {/* With AI §3.10.8.1 */}
-      <p id="wd-assignment-id" className="mb-4 text-sm text-neutral-600">
-        Assignment id: {aid}
-      </p>
-
-      <label htmlFor="wd-description" className={label}>Description</label>
+      <p id="wd-assignment-id">Assignment id: {assignmentId}</p>
       <textarea
         id="wd-description"
-        rows={6}
-        className={`${input} mb-4`}
-        defaultValue={assignment?.description ?? ""}
+        rows={8}
+        className={`${input} w-full`}
+        value={draft.description}
+        onChange={(e) => setDraft({ ...draft, description: e.target.value })}
       />
-
-      <div className={row}>
-        <label htmlFor="wd-points" className={rowLabel}>Points</label>
-        <input
-          id="wd-points"
-          type="number"
-          defaultValue={assignment?.points ?? 100}
-          className={input}
-        />
-      </div>
-
-      <div className={row}>
-        <label htmlFor="wd-group" className={rowLabel}>Assignment Group</label>
-        <select id="wd-group" defaultValue="ASSIGNMENTS" className={input}>
-          <option value="ASSIGNMENTS">ASSIGNMENTS</option>
-          <option value="QUIZZES">QUIZZES</option>
-          <option value="EXAMS">EXAMS</option>
-          <option value="PROJECT">PROJECT</option>
-        </select>
-      </div>
-
-      <div className={row}>
-        <label htmlFor="wd-display-grade-as" className={rowLabel}>Display Grade as</label>
-        <select id="wd-display-grade-as" defaultValue="Percentage" className={input}>
-          <option value="Percentage">Percentage</option>
-          <option value="Points">Points</option>
-        </select>
-      </div>
-
-      <div className={row}>
-        <label htmlFor="wd-submission-type" className={rowLabel}>Submission Type</label>
-        <div className="rounded border border-neutral-300 p-3">
-          <select id="wd-submission-type" defaultValue="Online" className={`${input} mb-3`}>
-            <option value="Online">Online</option>
-            <option value="On Paper">On Paper</option>
-          </select>
-          <p className="mb-2 text-sm font-semibold">Online Entry Options</p>
-          {[
-            ["wd-text-entry", "Text Entry"],
-            ["wd-website-url", "Website URL"],
-            ["wd-media-recordings", "Media Recordings"],
-            ["wd-student-annotation", "Student Annotation"],
-            ["wd-file-upload", "File Uploads"],
-          ].map(([id, text]) => (
-            <label key={id} htmlFor={id} className="mb-1 flex items-center gap-2 text-sm">
-              <input type="checkbox" id={id} /> {text}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className={row}>
-        <span className={rowLabel}>Assign</span>
-        <div className="rounded border border-neutral-300 p-3">
-          <label htmlFor="wd-assign-to" className={label}>Assign to</label>
-          <input id="wd-assign-to" defaultValue="Everyone" className={`${input} mb-3`} />
-
-          <label htmlFor="wd-due-date" className={label}>Due</label>
-          <input
-            id="wd-due-date"
-            type="date"
-            defaultValue={assignment?.due}
-            className={`${input} mb-3`}
-          />
-
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <div>
-              <label htmlFor="wd-available-from" className={label}>Available from</label>
+      <table>
+        <tbody>
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-points">Points</label>
+            </td>
+            <td>
               <input
-                id="wd-available-from"
-                type="date"
-                defaultValue={assignment?.available}
+                id="wd-points"
+                type="number"
                 className={input}
+                value={draft.points}
+                onChange={(e) => setDraft({ ...draft, points: Number(e.target.value) })}
               />
-            </div>
-            <div>
-              <label htmlFor="wd-available-until" className={label}>Until</label>
-              <input id="wd-available-until" type="date" className={input} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <hr className="my-4" />
-      <div className="flex justify-end gap-2">
-        <Link
-          href={`/courses/${cid}/assignments`}
-          id="wd-cancel"
-          className="rounded border border-neutral-300 bg-neutral-100 px-4 py-2 text-sm text-neutral-900 no-underline"
-        >
-          Cancel
-        </Link>
-        <Link
-          href={`/courses/${cid}/assignments`}
+            </td>
+          </tr>
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-due-date">Due</label>
+            </td>
+            <td>
+              <input
+                type="date"
+                id="wd-due-date"
+                className={input}
+                value={draft.due}
+                onChange={(e) => setDraft({ ...draft, due: e.target.value })}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-available-from">Available from</label>
+            </td>
+            <td>
+              <input
+                type="date"
+                id="wd-available-from"
+                className={input}
+                value={draft.available}
+                onChange={(e) => setDraft({ ...draft, available: e.target.value })}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td align="right" valign="top">
+              <label htmlFor="wd-available-until">Until</label>
+            </td>
+            <td>
+              <input
+                type="date"
+                id="wd-available-until"
+                className={input}
+                value={draft.until ?? ""}
+                onChange={(e) => setDraft({ ...draft, until: e.target.value })}
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br />
+      <Link
+        href={`/courses/${courseId}/assignments`}
+        id="wd-cancel"
+        className="me-2 rounded border border-neutral-300 px-3 py-1.5 no-underline"
+      >
+        Cancel
+      </Link>
+      {canEdit && (
+        <button
+          type="button"
           id="wd-save"
-          className="rounded border border-red-600 bg-red-600 px-4 py-2 text-sm text-white no-underline"
+          onClick={save}
+          className="rounded bg-red-600 px-3 py-1.5 text-white"
         >
           Save
-        </Link>
-      </div>
+        </button>
+      )}
     </div>
   );
 }

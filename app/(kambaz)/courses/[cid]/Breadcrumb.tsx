@@ -7,7 +7,6 @@ export default function Breadcrumb({
 }) {
   const pathname = usePathname() ?? "";
   const section = pathname.split("/").pop() ?? "";
-
   const label =
     section === "table"
       ? "People"
