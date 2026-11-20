@@ -4,8 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
 import CourseNavigation from "./Navigation";
 import Breadcrumb from "./Breadcrumb";
-import { useCoursesStore } from "../../store/coursesStore";
-import { useEnrollmentsStore } from "../../store/enrollmentsStore";
+import * as client from "../client";
+import type { Course } from "../../store/coursesStore";
 import { useAccountContext } from "../../account/AccountContext";
 export default function CoursesLayout({
   children,
@@ -13,28 +13,34 @@ export default function CoursesLayout({
   const { cid } = useParams();
   const courseId = typeof cid === "string" ? cid : "";
   const router = useRouter();
-  const courses = useCoursesStore((state) => state.courses);
-  const enrollments = useEnrollmentsStore((state) => state.enrollments);
   const { currentUser } = useAccountContext();
-  const course = courses.find((c) => c._id === courseId);
+  const [course, setCourse] = useState<Course | undefined>(undefined);
+  const [allowed, setAllowed] = useState(true);
   const [showCourseNav, setShowCourseNav] = useState(true);
-  const allowed =
-    !currentUser ||
-    enrollments.some(
-      (e) => e.user === currentUser._id && e.course === courseId,
-    );
   useEffect(() => {
-    if (!allowed) router.push("/dashboard");
-  }, [allowed, router]);
+    const load = async () => {
+      try {
+        const all: Course[] = await client.fetchAllCourses();
+        setCourse(all.find((c) => c._id === courseId));
+        if (currentUser) {
+          const mine: Course[] = await client.findMyCourses();
+          if (!mine.some((c) => c._id === courseId)) {
+            setAllowed(false);
+            router.push("/dashboard");
+          }
+        }
+      } catch {
+        /* server may be down */
+      }
+    };
+    load();
+  }, [courseId, currentUser, router]);
   if (!allowed) return null;
   return (
     <div id="wd-courses">
       <h2 className="text-2xl font-semibold text-red-600">
-        <FaAlignJustify
-          className="me-4 mb-1 inline cursor-pointer text-xl"
-          onClick={() => setShowCourseNav(!showCourseNav)}
-          title="Toggle course navigation"
-        />
+        <FaAlignJustify className="me-4 mb-1 inline cursor-pointer text-xl"
+          onClick={() => setShowCourseNav(!showCourseNav)} title="Toggle course navigation" />
         <Breadcrumb course={course} />
         <span id="wd-course-id" className="ms-2 text-base text-neutral-500">
           ({course?._id})

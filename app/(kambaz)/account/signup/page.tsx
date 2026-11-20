@@ -2,56 +2,40 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { emptyUser, useAccountContext } from "../AccountContext";
-import { useUsersStore } from "../../store/usersStore";
+import { useAccountContext } from "../AccountContext";
+import * as client from "../client";
 export default function Signup() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
   const { setCurrentUser } = useAccountContext();
-  const addUser = useUsersStore((state) => state.addUser);
   const router = useRouter();
-  const signup = () => {
-    if (!username || !password) return;
-    const newUser = {
-      ...emptyUser,
-      _id: crypto.randomUUID(),
-      username,
-      password,
-      role: "STUDENT",
-    };
-    addUser(newUser);
-    setCurrentUser(newUser);
-    router.push("/account/profile");
+  const signup = async () => {
+    if (!user.username || !user.password) return;
+    try {
+      const current = await client.signup({ ...user, role: "STUDENT" } as typeof user);
+      setCurrentUser(current);
+      router.push("/account/profile");
+    } catch {
+      setError("Username already in use");
+    }
   };
   return (
     <div id="wd-signup-screen">
       <h3>Sign up</h3>
-      <input
-        id="wd-username"
-        placeholder="username"
+      {error && <p className="mb-2 rounded bg-red-100 px-3 py-2 text-red-800">{error}</p>}
+      <input id="wd-username" placeholder="username"
         className="mb-2 block w-full max-w-sm rounded border border-neutral-300 px-3 py-1.5"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        id="wd-password"
-        placeholder="password"
-        type="password"
+        value={user.username}
+        onChange={(e) => setUser({ ...user, username: e.target.value })} />
+      <input id="wd-password" placeholder="password" type="password"
         className="mb-2 block w-full max-w-sm rounded border border-neutral-300 px-3 py-1.5"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button
-        type="button"
-        onClick={signup}
-        id="wd-signup-btn"
-        className="mb-2 w-full max-w-sm rounded bg-blue-600 px-3 py-1.5 text-white"
-      >
+        value={user.password}
+        onChange={(e) => setUser({ ...user, password: e.target.value })} />
+      <button type="button" onClick={signup} id="wd-signup-btn"
+        className="mb-2 w-full max-w-sm rounded bg-blue-600 px-3 py-1.5 text-white">
         Sign up
       </button>{" "}
-      <Link href="/account/signin" id="wd-signin-link">
-        Sign in
-      </Link>
+      <Link href="/account/signin" id="wd-signin-link">Sign in</Link>
     </div>
   );
 }

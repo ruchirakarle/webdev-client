@@ -15,6 +15,24 @@ export default function Labs() {
         >
           GitHub Repository
         </a>
+        <br />
+        <a
+          href="https://github.com/ruchirakarle/webdev-server"
+          id="wd-github-server"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Server GitHub Repository
+        </a>
+        <br />
+        <a
+          href="https://webdev-server.onrender.com"
+          id="wd-render-server"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Render Server
+        </a>
       </p>
       <ul>
         <li>
@@ -29,6 +47,11 @@ export default function Labs() {
         <li>
           <Link href="/labs/lab4" id="wd-lab4-page-link">
             Lab 4: Managing Client State
+          </Link>
+        </li>
+        <li>
+          <Link href="/labs/lab5" id="wd-lab5-page-link">
+            Lab 5: RESTful Web APIs
           </Link>
         </li>
         <li>
