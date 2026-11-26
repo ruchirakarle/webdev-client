@@ -8,8 +8,10 @@ const LINKS = [
   { href: "/labs/lab3", id: "wd-lab3-link", label: "Lab 3", match: (p: string) => p.includes("/lab3") },
   { href: "/labs/lab4", id: "wd-lab4-link", label: "Lab 4", match: (p: string) => p.includes("/lab4") },
   { href: "/labs/lab5", id: "wd-lab5-link", label: "Lab 5", match: (p: string) => p.includes("/lab5") },
+  { href: "/labs/lab6", id: "wd-lab6-link", label: "Lab 6", match: (p: string) => p.includes("/lab6") },
   { href: "https://github.com/ruchirakarle/webdev-server", id: "wd-github-server", label: "Server GitHub", match: () => false },
   { href: "https://webdev-server-8qu7.onrender.com", id: "wd-render-server", label: "Render Server", match: () => false },
+  { href: "https://webdev-server-a6-fl1c.onrender.com", id: "wd-render-server", label: "Render Server", match: () => false },
   { href: "/", id: "wd-kambaz-link", label: "Kambaz", match: () => false },
   // My extra link from Chapter 1
   { href: "/book/ch1", id: "wd-toc-book-link", label: "Chapter 1", match: () => false },

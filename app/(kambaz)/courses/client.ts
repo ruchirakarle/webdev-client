@@ -16,7 +16,7 @@ export const findMyCourses = async () => {
   return data;
 };
 export const createCourse = async (course: unknown) => {
-  const { data } = await axiosWithCredentials.post(`${USERS_API}/current/courses`, course);
+  const { data } = await axiosWithCredentials.post(COURSES_API, course);
   return data;
 };
 export const deleteCourse = async (courseId: string) => {
@@ -25,6 +25,10 @@ export const deleteCourse = async (courseId: string) => {
 };
 export const updateCourse = async (course: { _id: string; [key: string]: unknown }) => {
   const { data } = await axios.put(`${COURSES_API}/${course._id}`, course);
+  return data;
+};
+export const findCourseById = async (courseId: string) => {
+  const { data } = await axios.get(`${COURSES_API}/${courseId}`);
   return data;
 };
 

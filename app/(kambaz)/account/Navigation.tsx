@@ -15,17 +15,25 @@ export default function AccountNavigation() {
           <Link
             href={`/account/${link}`}
             id={`wd-account-${link}-link`}
-            className={pathname.endsWith(link) ? "font-bold" : "text-red-600"}
+            className={pathname.endsWith(link) ? "font-semibold text-black" : "text-red-600"}
           >
-            {link === "signin"
-              ? "Signin"
-              : link === "signup"
-                ? "Signup"
-                : "Profile"}
+            {link === "signin" ? "Signin" : link === "signup" ? "Signup" : "Profile"}
           </Link>
           <br />
         </span>
       ))}
+      {currentUser && currentUser.role === "ADMIN" && (
+        <>
+          <Link
+            href="/account/users"
+            id="wd-account-users-link"
+            className={pathname.endsWith("users") ? "font-semibold text-black" : "text-red-600"}
+          >
+            Users
+          </Link>
+          <br />
+        </>
+      )}
     </div>
   );
 }
